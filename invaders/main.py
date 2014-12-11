@@ -25,16 +25,11 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL import GLU as glu
 
+import display
 import keyboard
 
 # Number of the glut window.
 window = 0
-
-# Rotation angle for the triangle.
-rtri = 0.0
-
-# Rotation angle for the quadrilateral.
-rquad = 0.0
 
 def gl_init(width, height):
     '''initialize OpenGL environment'''
@@ -68,57 +63,6 @@ def resize_func(width, height):
     glu.gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
 
-# The main drawing function.
-def DrawGLScene():
-    global rtri, rquad
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear The Screen And The Depth Buffer
-    glLoadIdentity()  # Reset The View
-    glTranslatef(-1.5, 0.0, -6.0)  # Move Left And Into The Screen
-
-    glRotatef(rtri, 0.0, 1.0, 0.0)  # Rotate The Pyramid On It's Y Axis
-
-    glBegin(GL_TRIANGLES)  # Start Drawing The Pyramid
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Front)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(-1.0, -1.0, 1.0)  # Left Of Triangle (Front)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(1.0, -1.0, 1.0)
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Right)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(1.0, -1.0, 1.0)  # Left Of Triangle (Right)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(1.0, -1.0, -1.0)  # Right
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Back)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(1.0, -1.0, -1.0)  # Left Of Triangle (Back)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(-1.0, -1.0, -1.0)  # Right Of
-
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Left)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(-1.0, -1.0, -1.0)  # Left Of Triangle (Left)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(-1.0, -1.0, 1.0)  # Right Of Triangle (Left)
-    glEnd()
-
-    # What values to use?  Well, if you have a FAST machine
-    # and a FAST 3D Card, then large values make an unpleasant display
-    # with flickering and tearing.  I found that smaller values work better,
-    # but this was based on my experience.
-    rtri = rtri + 0.2  # Increase The Rotation Variable For The Triangle
-    rquad = rquad - 0.15  # Decrease The Rotation Variable For The Quad
-
-    # since this is double buffered, swap buffers to display what we drew
-    glutSwapBuffers()
 
 if __name__ == '__main__':
     glutInit(sys.argv)
@@ -132,12 +76,12 @@ if __name__ == '__main__':
     # assign to global window variable
     window = glutCreateWindow('Invaders')
 
-    glutDisplayFunc(DrawGLScene)
+    glutDisplayFunc(display.draw_scene)
     if config.fullscreen_mode:
         glutFullScreen()
 
     # redraw the scene between other calculations
-    glutIdleFunc(DrawGLScene)
+    glutIdleFunc(display.get_display(None, None))
     glutReshapeFunc(resize_func)
     glutKeyboardFunc(keyboard.normal_keys)
 
