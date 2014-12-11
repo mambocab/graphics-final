@@ -37,10 +37,12 @@ def draw_scene(gl, glut):
     pre_draw(gl, glut)
 
     # reset view to initialized view
-    # gl.glTranslatef(-1.5, 0.0, -6.0)
+    gl.glTranslatef(0.0, -5, -30.0)
 
     # rotate pyramid-building space by rtri on y axis
     gl.glRotatef(rtri, 0.0, 1.0, 0.0)
+
+    gl.glRotatef(90, 0, 0, 1)
 
     with gl_environment(gl, gl.GL_TRIANGLES):
         gl.glColor3f(1.0, 0.0, 0.0)
