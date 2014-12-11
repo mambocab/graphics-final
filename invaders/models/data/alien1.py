@@ -479,10 +479,10 @@ faces = ((68, 150, 129),
          (67, 49, 41),
          (14, 40, 41),)
 
-material = Material(Ns=96.078431,
-                    Ka=Color(r=0.000000, g=0.000000, b=0.000000),
-                    Kd=Color(r=1.000000, g=0.000000, b=0.000000),
-                    Ks=Color(r=0.333333, g=0.333333, b=0.333333),
-                    Ni=1.000000,
-                    d=1.000000,
+material = Material(ambient=Color(r=0.000000, g=0.000000, b=0.000000),
+                    diffuse=Color(r=1.000000, g=0.000000, b=0.000000),
+                    specular=Color(r=0.333333, g=0.333333, b=0.333333),
+                    specular_exponent=96.078431,
+                    refraction_index=1.000000,
+                    dissolve=1.000000,
                     illum=2)
