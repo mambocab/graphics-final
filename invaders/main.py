@@ -21,15 +21,16 @@ if config.production_mode:
 
 ##############
 
-from OpenGL.GL import *
-from OpenGL.GLUT import *
+from OpenGL import GL as gl
 from OpenGL import GLU as glu
+from OpenGL import GLUT as glut
 
 import display
 import keyboard
 
 # Number of the glut window.
 window = 0
+
 
 def get_aspect_ratio(width, height):
     try:
@@ -40,26 +41,26 @@ def get_aspect_ratio(width, height):
 
 def set_projection_matrix(width, height, reset_to_modelview=True):
     # reset projection matrix
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
+    gl.glMatrixMode(gl.GL_PROJECTION)
+    gl.glLoadIdentity()
     # internally set aspect ratio
     glu.gluPerspective(45.0, get_aspect_ratio(width, height), 0.1, 100.0)
 
     if reset_to_modelview:
-        glMatrixMode(GL_MODELVIEW)
+        gl.glMatrixMode(gl.GL_MODELVIEW)
 
 
 def gl_init(width, height):
     '''initialize OpenGL environment'''
     # black background
-    glClearColor(0.0, 0.0, 0.0, 0.0)
+    gl.glClearColor(0.0, 0.0, 0.0, 0.0)
     # enable depth buffer clearing
-    glClearDepth(1.0)
+    gl.glClearDepth(1.0)
     # set depth test type and enable depth testing
-    glDepthFunc(GL_LESS)
-    glEnable(GL_DEPTH_TEST)
+    gl.glDepthFunc(gl.GL_LESS)
+    gl.glEnable(gl.GL_DEPTH_TEST)
     # use smooth color shading
-    glShadeModel(GL_SMOOTH)
+    gl.glShadeModel(gl.GL_SMOOTH)
 
     set_projection_matrix(width, height)
 
@@ -67,31 +68,33 @@ def gl_init(width, height):
 def resize_func(width, height):
     '''function to call when window is resized'''
     # reset viewport
-    glViewport(0, 0, width, height)
+    gl.glViewport(0, 0, width, height)
     set_projection_matrix(width, height)
 
 
 if __name__ == '__main__':
-    glutInit(sys.argv)
+    glut.glutInit(sys.argv)
 
     width, height = 640, 480
 
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-    glutInitWindowSize(width, height)
-    glutInitWindowPosition(0, 0)
+    glut.glutInitDisplayMode(glut.GLUT_RGBA
+                             | glut.GLUT_DOUBLE
+                             | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(width, height)
+    glut.glutInitWindowPosition(0, 0)
 
     # assign to global window variable
-    window = glutCreateWindow('Invaders')
+    window = glut.glutCreateWindow('Invaders')
 
-    glutDisplayFunc(display.draw_scene)
+    glut.glutDisplayFunc(display.draw_scene)
     if config.fullscreen_mode:
-        glutFullScreen()
+        glut.glutFullScreen()
 
     # redraw the scene between other calculations
-    glutIdleFunc(display.get_display(None, None))
-    glutReshapeFunc(resize_func)
-    glutKeyboardFunc(keyboard.normal_keys)
+    glut.glutIdleFunc(display.get_display(None, None))
+    glut.glutReshapeFunc(resize_func)
+    glut.glutKeyboardFunc(keyboard.normal_keys)
 
     gl_init(width, height)
 
-    glutMainLoop()
+    glut.glutMainLoop()
