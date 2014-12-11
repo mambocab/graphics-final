@@ -42,19 +42,23 @@ def gl_init(width, height):
     glClearColor(0.0, 0.0, 0.0, 0.0)
     # enable depth buffer clearing
     glClearDepth(1.0)
-    glDepthFunc(GL_LESS)  # The Type Of Depth Test To Do
-    glEnable(GL_DEPTH_TEST)  # Enables Depth Testing
-    glShadeModel(GL_SMOOTH)  # Enables Smooth Color Shading
+    # set depth test type and enable depth testing
+    glDepthFunc(GL_LESS)
+    glEnable(GL_DEPTH_TEST)
+    # use smooth color shading
+    glShadeModel(GL_SMOOTH)
 
+    # reset projection matrix
     glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()  # Reset The Projection Matrix
-    # Calculate The Aspect Ratio Of The Window
+    glLoadIdentity()
+    # internally set aspect ratio
     glu.gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
 
+    # switch to model view so we can start building models
     glMatrixMode(GL_MODELVIEW)
 
 # The function called when our window is resized (which shouldn't happen if you enable fullscreen, below)
-def ReSizeGLScene(width, height):
+def resize_func(width, height):
     if height == 0:  # Prevent A Divide By Zero If The Window Is Too Small
         height = 1
 
@@ -119,8 +123,10 @@ def DrawGLScene():
 if __name__ == '__main__':
     glutInit(sys.argv)
 
+    width, height = 640, 480
+
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-    glutInitWindowSize(640, 480)
+    glutInitWindowSize(width, height)
     glutInitWindowPosition(0, 0)
 
     # assign to global window variable
@@ -130,11 +136,11 @@ if __name__ == '__main__':
     if config.fullscreen_mode:
         glutFullScreen()
 
-    # When we are doing nothing, redraw the scene.
+    # redraw the scene between other calculations
     glutIdleFunc(DrawGLScene)
-    glutReshapeFunc(ReSizeGLScene)
+    glutReshapeFunc(resize_func)
     glutKeyboardFunc(keyboard.normal_keys)
 
-    gl_init(640, 480)
+    gl_init(width, height)
 
     glutMainLoop()
