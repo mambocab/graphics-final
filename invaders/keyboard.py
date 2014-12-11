@@ -1,6 +1,6 @@
 import sys
 
-def keyboard(key, x, y, _exit=sys.exit):
+def normal_keys(key, x, y, _exit=sys.exit):
     if key == b'q':
         _exit()
 
