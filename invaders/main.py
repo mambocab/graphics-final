@@ -31,6 +31,24 @@ import keyboard
 # Number of the glut window.
 window = 0
 
+def get_aspect_ratio(width, height):
+    try:
+        return width / height
+    except ZeroDivisionError:
+        return width
+
+
+def set_projection_matrix(width, height, reset_to_modelview=True):
+    # reset projection matrix
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    # internally set aspect ratio
+    glu.gluPerspective(45.0, get_aspect_ratio(width, height), 0.1, 100.0)
+
+    if reset_to_modelview:
+        glMatrixMode(GL_MODELVIEW)
+
+
 def gl_init(width, height):
     '''initialize OpenGL environment'''
     # black background
@@ -43,25 +61,14 @@ def gl_init(width, height):
     # use smooth color shading
     glShadeModel(GL_SMOOTH)
 
-    # reset projection matrix
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    # internally set aspect ratio
-    glu.gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
+    set_projection_matrix(width, height)
 
-    # switch to model view so we can start building models
-    glMatrixMode(GL_MODELVIEW)
 
-# The function called when our window is resized (which shouldn't happen if you enable fullscreen, below)
 def resize_func(width, height):
-    if height == 0:  # Prevent A Divide By Zero If The Window Is Too Small
-        height = 1
-
-    glViewport(0, 0, width, height)  # Reset The Current Viewport And Perspective Transformation
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glu.gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
-    glMatrixMode(GL_MODELVIEW)
+    '''function to call when window is resized'''
+    # reset viewport
+    glViewport(0, 0, width, height)
+    set_projection_matrix(width, height)
 
 
 if __name__ == '__main__':
