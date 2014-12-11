@@ -85,13 +85,14 @@ if __name__ == '__main__':
 
     # assign to global window variable
     window = glut.glutCreateWindow('Invaders')
-
-    glut.glutDisplayFunc(display.draw_scene)
     if config.fullscreen_mode:
         glut.glutFullScreen()
 
-    # redraw the scene between other calculations
-    glut.glutIdleFunc(display.get_display(None, None))
+    # draw scene on display and between other calculations
+    draw_func = display.get_display(gl, glut)
+    glut.glutDisplayFunc(draw_func)
+
+    glut.glutIdleFunc(draw_func)
     glut.glutReshapeFunc(resize_func)
     glut.glutKeyboardFunc(keyboard.normal_keys)
 

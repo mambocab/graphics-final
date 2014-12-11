@@ -4,9 +4,6 @@ from models import ALIEN_1
 from linearalgebra import normal_vector
 from contextlib import contextmanager
 
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-
 @contextmanager
 def enabled(gl_setting):
     gl.glEnable(gl_setting)
@@ -19,13 +16,11 @@ def gl_environment(gl, gl_env):
     yield
     gl.glEnd()
 
-def set_up(gl, glut):
+def pre_draw(gl, glut):
     # clears screen
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    # gl magic
-    gl.glEnable(gl.GL_TEXTURE_2D)
     # marks buffer for redrawing
-    glut.glutPostRedisplay()
+    gl.glLoadIdentity()
 
 # Rotation angle for the triangle.
 rtri = 0.0
@@ -33,50 +28,46 @@ rtri = 0.0
 # Rotation angle for the quadrilateral.
 rquad = 0.0
 
-def draw_scene():
+def draw_scene(gl, glut):
     global rtri, rquad
 
-    # clear screen & depth buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    pre_draw(gl, glut)
+
     # reset view to initialized view
-    glLoadIdentity()
-    glTranslatef(-1.5, 0.0, -6.0)
+    gl.glTranslatef(-1.5, 0.0, -6.0)
 
     # rotate pyramid-building space by rtri on y axis
-    glRotatef(rtri, 0.0, 1.0, 0.0)
+    gl.glRotatef(rtri, 0.0, 1.0, 0.0)
+
+    with gl_environment(gl, gl.GL_TRIANGLES):
+        gl.glColor3f(1.0, 0.0, 0.0)  # Red
+        gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Front)
+        gl.glColor3f(0.0, 1.0, 0.0)  # Green
+        gl.glVertex3f(-1.0, -1.0, 1.0)  # Left Of Triangle (Front)
+        gl.glColor3f(0.0, 0.0, 1.0)  # Blue
+        gl.glVertex3f(1.0, -1.0, 1.0)
+
+        gl.glColor3f(1.0, 0.0, 0.0)  # Red
+        gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Right)
+        gl.glColor3f(0.0, 0.0, 1.0)  # Blue
+        gl.glVertex3f(1.0, -1.0, 1.0)  # Left Of Triangle (Right)
+        gl.glColor3f(0.0, 1.0, 0.0)  # Green
+        gl.glVertex3f(1.0, -1.0, -1.0)  # Right
+
+        gl.glColor3f(1.0, 0.0, 0.0)  # Red
+        gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Back)
+        gl.glColor3f(0.0, 1.0, 0.0)  # Green
+        gl.glVertex3f(1.0, -1.0, -1.0)  # Left Of Triangle (Back)
+        gl.glColor3f(0.0, 0.0, 1.0)  # Blue
+        gl.glVertex3f(-1.0, -1.0, -1.0)  # Right Of
 
 
-    glBegin(GL_TRIANGLES)
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Front)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(-1.0, -1.0, 1.0)  # Left Of Triangle (Front)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(1.0, -1.0, 1.0)
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Right)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(1.0, -1.0, 1.0)  # Left Of Triangle (Right)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(1.0, -1.0, -1.0)  # Right
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Back)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(1.0, -1.0, -1.0)  # Left Of Triangle (Back)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(-1.0, -1.0, -1.0)  # Right Of
-
-
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Left)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(-1.0, -1.0, -1.0)  # Left Of Triangle (Left)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(-1.0, -1.0, 1.0)  # Right Of Triangle (Left)
-    glEnd()
+        gl.glColor3f(1.0, 0.0, 0.0)  # Red
+        gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Left)
+        gl.glColor3f(0.0, 0.0, 1.0)  # Blue
+        gl.glVertex3f(-1.0, -1.0, -1.0)  # Left Of Triangle (Left)
+        gl.glColor3f(0.0, 1.0, 0.0)  # Green
+        gl.glVertex3f(-1.0, -1.0, 1.0)  # Right Of Triangle (Left)
 
     # What values to use?  Well, if you have a FAST machine
     # and a FAST 3D Card, then large values make an unpleasant display
@@ -86,7 +77,9 @@ def draw_scene():
     rquad = rquad - 0.15  # Decrease The Rotation Variable For The Quad
 
     # since this is double buffered, swap buffers to display what we drew
-    glutSwapBuffers()
+    glut.glutSwapBuffers()
 
 def get_display(gl, glut):
-    return draw_scene
+    def display_func():
+        return draw_scene(gl, glut)
+    return display_func
