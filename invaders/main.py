@@ -44,7 +44,7 @@ def set_projection_matrix(width, height, reset_to_modelview=True):
     gl.glMatrixMode(gl.GL_PROJECTION)
     gl.glLoadIdentity()
     # internally set aspect ratio
-    glu.gluPerspective(45.0, get_aspect_ratio(width, height), 0.1, 100.0)
+    glu.gluPerspective(120.0, get_aspect_ratio(width, height), 0.1, 100.0)
 
     if reset_to_modelview:
         gl.glMatrixMode(gl.GL_MODELVIEW)

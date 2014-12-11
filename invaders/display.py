@@ -4,6 +4,9 @@ from models import ALIEN_1
 from linearalgebra import normal_vector
 from contextlib import contextmanager
 from collections import deque
+from functools import wraps
+
+import alienfield
 
 @contextmanager
 def enabled(gl_setting):
@@ -20,7 +23,6 @@ def gl_environment(gl, gl_env):
 def pre_draw(gl, glut):
     # clears screen
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    # marks buffer for redrawing
     gl.glLoadIdentity()
 
 # Rotation angle for the triangle.
@@ -31,58 +33,70 @@ rquad = 0.0
 
 consume = lambda iterator: deque(iterator, maxlen=0)
 
-def draw_scene(gl, glut):
-    global rtri, rquad
-
-    pre_draw(gl, glut)
-
-    # reset view to initialized view
-    gl.glTranslatef(0.0, -5, -30.0)
-
-    # rotate pyramid-building space by rtri on y axis
-    gl.glRotatef(rtri, 0.0, 1.0, 0.0)
-
-    gl.glRotatef(90, 0, 0, 1)
+def draw_alien(gl):
 
     with gl_environment(gl, gl.GL_TRIANGLES):
         gl.glColor3f(1.0, 0.0, 0.0)
         for i, tri in enumerate(ALIEN_1):
             consume(map(gl.glVertex3fv, tri))
 
-        # gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Front)
-        # gl.glColor3f(0.0, 1.0, 0.0)  # Green
-        # gl.glVertex3f(-1.0, -1.0, 1.0)  # Left Of Triangle (Front)
-        # gl.glColor3f(0.0, 0.0, 1.0)  # Blue
-        # gl.glVertex3f(1.0, -1.0, 1.0)
-
-        # gl.glColor3f(1.0, 0.0, 0.0)  # Red
-        # gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Right)
-        # gl.glColor3f(0.0, 0.0, 1.0)  # Blue
-        # gl.glVertex3f(1.0, -1.0, 1.0)  # Left Of Triangle (Right)
-        # gl.glColor3f(0.0, 1.0, 0.0)  # Green
-        # gl.glVertex3f(1.0, -1.0, -1.0)  # Right
-
-        # gl.glColor3f(1.0, 0.0, 0.0)  # Red
-        # gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Back)
-        # gl.glColor3f(0.0, 1.0, 0.0)  # Green
-        # gl.glVertex3f(1.0, -1.0, -1.0)  # Left Of Triangle (Back)
-        # gl.glColor3f(0.0, 0.0, 1.0)  # Blue
-        # gl.glVertex3f(-1.0, -1.0, -1.0)  # Right Of
+def orient_alien(gl):
+    gl.glRotatef(90, 0, 0, 1)
+    gl.glRotatef(90, 1, 0, 0)
 
 
-        # gl.glColor3f(1.0, 0.0, 0.0)  # Red
-        # gl.glVertex3f(0.0, 1.0, 0.0)  # Top Of Triangle (Left)
-        # gl.glColor3f(0.0, 0.0, 1.0)  # Blue
-        # gl.glVertex3f(-1.0, -1.0, -1.0)  # Left Of Triangle (Left)
-        # gl.glColor3f(0.0, 1.0, 0.0)  # Green
-        # gl.glVertex3f(-1.0, -1.0, 1.0)  # Right Of Triangle (Left)
+class once():
+    def __init__(self, f, *args, **kwargs):
+        self.executed = False
+        self.f, self.args, self.kwargs = f, args, kwargs
 
-    # What values to use?  Well, if you have a FAST machine
-    # and a FAST 3D Card, then large values make an unpleasant display
-    # with flickering and tearing.  I found that smaller values work better,
-    # but this was based on my experience.
-    rtri = rtri + 0.2  # Increase The Rotation Variable For The Triangle
-    rquad = rquad - 0.15  # Decrease The Rotation Variable For The Quad
+    def __call__(self):
+        if not self.executed:
+            self.f(*self.args, **self.kwargs)
+        self.executed = True
+
+class after_first():
+    def __init__(self, f, *args, **kwargs):
+        self.called_once = False
+        self.f, self.args, self.kwargs = f, args, kwargs
+
+    def __call__(self):
+        if self.called_once:
+            self.f(*self.args, **self.kwargs)
+        self.executed = True
+
+
+def draw_scene(gl, glut):
+    global rtri, rquad
+
+    pre_draw(gl, glut)
+
+    first = True
+
+    gl.glTranslatef(-50, -14, -27.0)
+    down_frame_motion = 0
+    frame_step_size = 10
+
+    orient_alien_first_time = once(orient_alien, gl)
+    for row in alienfield.field:
+        # reset view to initialized view
+        gl.glTranslatef(frame_step_size, 0, 0)
+        down_frame_motion += frame_step_size
+
+        orient_alien_first_time()
+
+        first_alien = True
+        right_frame_motion = 0
+        for a in row:
+            if first_alien:
+                first_alien = False
+            else:
+                gl.glTranslatef(0, 0, frame_step_size)
+                right_frame_motion += frame_step_size
+            if a:
+                draw_alien(gl)
+        gl.glTranslatef(0, 0, -right_frame_motion)
+
 
     # since this is double buffered, swap buffers to display what we drew
     glut.glutSwapBuffers()
