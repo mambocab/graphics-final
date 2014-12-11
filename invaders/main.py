@@ -50,7 +50,7 @@ def set_projection_matrix(width, height, reset_to_modelview=True):
         gl.glMatrixMode(gl.GL_MODELVIEW)
 
 
-def gl_init(width, height):
+def init_environment(width, height):
     '''initialize OpenGL environment'''
     # black background
     gl.glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -95,6 +95,6 @@ if __name__ == '__main__':
     glut.glutReshapeFunc(resize_func)
     glut.glutKeyboardFunc(keyboard.normal_keys)
 
-    gl_init(width, height)
+    init_environment(width, height)
 
     glut.glutMainLoop()
