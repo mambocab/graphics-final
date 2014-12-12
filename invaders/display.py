@@ -61,15 +61,7 @@ def world_pos(gl, p):
     yield
     gl.glTranslatef(70 * p.x, 20 * p.y, 0)
 
-
-def draw_scene(gl, glut, world):
-    global rtri, rquad
-
-    pre_draw(gl, glut)
-
-    first = True
-
-    gl.glTranslatef(-70, 40, -70)
+def draw_alien_field(gl, world):
     down_frame_motion = 0
     frame_step_size = 10
 
@@ -102,6 +94,17 @@ def draw_scene(gl, glut, world):
 
         gl.glTranslatef(-row_pushes * frame_step_size, 0, 0)
 
+
+def draw_scene(gl, glut, world):
+    global rtri, rquad
+
+    pre_draw(gl, glut)
+
+    first = True
+
+    gl.glTranslatef(-70, 40, -70)
+
+    draw_alien_field(gl, world)
     # since this is double buffered, swap buffers to display what we drew
     glut.glutSwapBuffers()
 

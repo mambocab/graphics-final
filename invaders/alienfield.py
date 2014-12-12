@@ -12,11 +12,11 @@ class AlienField():
         field_height = 5
         self.field = tuple(tuple(True for _ in range(field_width))
                            for _ in range(field_height))
-        
+
         self.width = .4
         self.position = Position2(0, 0)
         self.velocity = Velocity(-.009, 0)
-        
+
 
         self._just_moved_down = False
 
