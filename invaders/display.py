@@ -6,8 +6,6 @@ from contextlib import contextmanager
 from collections import deque
 from functools import wraps
 
-import alienfield
-
 @contextmanager
 def enabled(gl_setting):
     gl.glEnable(gl_setting)
@@ -34,8 +32,8 @@ rquad = 0.0
 consume = lambda iterator: deque(iterator, maxlen=0)
 
 def draw_alien(gl):
-
     with gl_environment(gl, gl.GL_TRIANGLES):
+        # gl.glScalef(.4, .4, .4)
         gl.glColor3f(1.0, 0.0, 0.0)
         for i, tri in enumerate(ALIEN_1):
             consume(map(gl.glVertex3fv, tri))
@@ -46,6 +44,7 @@ def orient_alien(gl):
 
 
 class once():
+    '''decorator to make sure something is called once'''
     def __init__(self, f, *args, **kwargs):
         self.executed = False
         self.f, self.args, self.kwargs = f, args, kwargs
@@ -55,53 +54,60 @@ class once():
             self.f(*self.args, **self.kwargs)
         self.executed = True
 
-class after_first():
-    def __init__(self, f, *args, **kwargs):
-        self.called_once = False
-        self.f, self.args, self.kwargs = f, args, kwargs
-
-    def __call__(self):
-        if self.called_once:
-            self.f(*self.args, **self.kwargs)
-        self.executed = True
+@contextmanager
+def world_pos(gl, p):
+    world_x = 70
+    gl.glTranslatef(-70 * p.x, -20 * p.y, 0)
+    yield
+    gl.glTranslatef(70 * p.x, 20 * p.y, 0)
 
 
-def draw_scene(gl, glut):
+def draw_scene(gl, glut, world):
     global rtri, rquad
 
     pre_draw(gl, glut)
 
     first = True
 
-    gl.glTranslatef(-50, -14, -27.0)
+    gl.glTranslatef(-70, 40, -70)
     down_frame_motion = 0
     frame_step_size = 10
 
     orient_alien_first_time = once(orient_alien, gl)
-    for row in alienfield.field:
-        # reset view to initialized view
-        gl.glTranslatef(frame_step_size, 0, 0)
-        down_frame_motion += frame_step_size
+    # render alien field
 
-        orient_alien_first_time()
-
-        first_alien = True
-        right_frame_motion = 0
-        for a in row:
-            if first_alien:
-                first_alien = False
+    with world_pos(gl, world.alien_field.position):
+        first_row = True
+        row_pushes = 0
+        for row in world.alien_field.field:
+            if not first_row:
+                gl.glTranslatef(frame_step_size, 0, 0)
+                row_pushes += 1
             else:
-                gl.glTranslatef(0, 0, frame_step_size)
-                right_frame_motion += frame_step_size
-            if a:
-                draw_alien(gl)
-        gl.glTranslatef(0, 0, -right_frame_motion)
+                first_row = False
 
+            orient_alien_first_time()
+
+            first_alien = True
+            alien_pushes = 0
+            for a in row:
+                if first_alien:
+                    first_alien = False
+                else:
+                    alien_pushes += 1
+                    gl.glTranslatef(0, 0, frame_step_size)
+                if a:
+                    draw_alien(gl)
+            gl.glTranslatef(0, 0, -alien_pushes * frame_step_size)
+
+        gl.glTranslatef(-row_pushes * frame_step_size, 0, 0)
 
     # since this is double buffered, swap buffers to display what we drew
     glut.glutSwapBuffers()
 
-def get_display(gl, glut):
+    world.update()
+
+def get_display(gl, glut, world):
     def display_func():
-        return draw_scene(gl, glut)
+        return draw_scene(gl, glut, world)
     return display_func

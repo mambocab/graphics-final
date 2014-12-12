@@ -28,6 +28,8 @@ from OpenGL import GLUT as glut
 import display
 import keyboard
 
+from world import World
+
 # Number of the glut window.
 window = 0
 
@@ -88,8 +90,10 @@ if __name__ == '__main__':
     if config.fullscreen_mode:
         glut.glutFullScreen()
 
+    world = World()
+
     # draw scene on display and between other calculations
-    draw_func = display.get_display(gl, glut)
+    draw_func = display.get_display(gl, glut, world)
     glut.glutDisplayFunc(draw_func)
 
     glut.glutIdleFunc(draw_func)
