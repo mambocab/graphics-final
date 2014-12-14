@@ -27,7 +27,7 @@ class Bullets():
                 new_bullets.add(Bullet(position=new_pos, owner=b.owner))
         self.bullets = new_bullets
 
-        print(self.bullets)
+        # print(self.bullets)
 
     def bullet_positions(self):
         for b in self.bullets:

@@ -3,13 +3,15 @@ from barriers import Barriers
 from playership import Player
 from bullets import Bullets
 
+import sys
+
 class World():
     def __init__(self):
         self.alien_field = AlienField()
         self.player = Player(self)
         self.bullets = Bullets()
-
         self.barriers = Barriers()
+
         self._updatables = (self.alien_field,
                             self.player,
                             self.bullets)

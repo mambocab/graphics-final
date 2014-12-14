@@ -1,6 +1,6 @@
 from functools import partial
 
-from models import ALIEN_1, PLAYER
+from models import ALIEN_1, PLAYER, BARRIER
 from linearalgebra import normal_vector
 from contextlib import contextmanager
 from collections import deque
@@ -53,6 +53,16 @@ def orient_player(gl):
     gl.glRotatef(90, 1, 0, 0)
     gl.glRotatef(-90, 0, 0, 1)
 
+@contextmanager
+def orient_barrier(gl):
+    gl.glRotatef(-90, 0, 0, 1)
+    gl.glRotatef(90, 1, 0, 0)
+
+    yield
+
+    gl.glRotatef(-90, 1, 0, 0)
+    gl.glRotatef(90, 0, 0, 1)
+
 
 def draw_alien(gl):
     with orient_alien(gl):
@@ -69,6 +79,15 @@ def draw_player(gl, pos):
                 for tri in PLAYER:
                     consume(map(gl.glVertex3fv, tri))
 
+def draw_barrier(gl):
+    scale_factor = 22
+    gl.glScale(scale_factor, scale_factor, scale_factor)
+    with orient_barrier(gl):
+        with gl_environment(gl, gl.GL_TRIANGLES):
+            for tri in BARRIER:
+                gl.glColor3f(1, 1, 1)
+                consume(map(gl.glVertex3fv, tri))
+    gl.glScale(1/scale_factor, 1/scale_factor, 1/scale_factor)
 
 class once():
     '''decorator to make sure something is called once'''
@@ -90,17 +109,20 @@ def world_pos(gl, p):
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)
 
 def draw_alien_field(gl, world):
-
     for alien_pos in world.alien_field.alien_positions():
         with world_pos(gl, alien_pos):
             # orient_alien_first_time()
             draw_alien(gl)
 
+def draw_barriers(gl, barriers):
+    for pos in barriers:
+        with world_pos(gl, pos):
+            draw_barrier(gl)
 
 def draw_bullets(gl, glut, bullets):
+    gl.glColor3f(1, 1, 1)
     for bullet_pos in bullets.bullet_positions():
         with world_pos(gl, bullet_pos):
-            gl.glColor3f(1, 1, 1)
             glut.glutSolidCube(1.5)
 
 
@@ -112,7 +134,7 @@ def draw_scene(gl, glut, world):
     gl.glTranslatef(0, 0, -50)
 
     draw_alien_field(gl, world)
-    # draw_barriers()
+    draw_barriers(gl, world.barriers)
     draw_bullets(gl, glut, world.bullets)
     draw_player(gl, world.player.position)
 
