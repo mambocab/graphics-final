@@ -5,7 +5,7 @@ from playership import Player
 class World():
     def __init__(self):
         self.alien_field = AlienField()
-        self.player = Player()
+        self.player = Player(self)
 
         self.barriers = Barriers()
         self._updatables = (self.alien_field, self.player)
@@ -15,13 +15,10 @@ class World():
             x.update()
 
     def receive_up(self):
-        print(self, 'up')
         self.player.receive_up()
 
     def receive_left(self):
-        print(self, 'left')
         self.player.receive_left()
 
     def receive_right(self):
-        print(self, 'right')
         self.player.receive_right()

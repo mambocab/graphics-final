@@ -52,7 +52,7 @@ def orient_player(gl):
 
     gl.glRotatef(90, 1, 0, 0)
     gl.glRotatef(-90, 0, 0, 1)
-    
+
 
 def draw_alien(gl):
     with orient_alien(gl):
@@ -84,7 +84,7 @@ class once():
 @contextmanager
 def world_pos(gl, p):
     world_x = lambda x: -100 + 10 * x
-    world_y = lambda y: -50 + 10 * y
+    world_y = lambda y: -70 + 10 * y
     gl.glTranslatef(world_x(p.x), -world_y(p.y), 0)
     yield
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)

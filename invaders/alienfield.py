@@ -15,12 +15,12 @@ def moves_printer(s, _d=collections.Counter()):
 
 class AlienField():
     def __init__(self):
-        field_width = 11
+        field_width = 7
         field_height = 5
         self.field = tuple(tuple(True for _ in range(field_width))
                            for _ in range(field_height))
 
-        self.dist_between = .5
+        self.dist_between = .7
 
         self.width = field_width + (self.dist_between * (field_width - 1))
         self.position = Position2(0, 0)
@@ -34,7 +34,7 @@ class AlienField():
                 if self.field[row_i][a_i]:
                     yield Position2(
                         self.position.x + (1 + self.dist_between) * a_i,
-                        self.position.y + (1 + self.dist_between) * row_i,
+                        self.position.y + (1 + self.dist_between / 2) * row_i,
                         )
 
 

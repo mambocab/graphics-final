@@ -7,26 +7,30 @@ class Actions(Enum):
     right = 1
     shoot = 2
 
-
 class Player():
-    def __init__(self):
-        self.position = Position2(0, 8)
+    def __init__(self, world):
+        self.position = Position2(0, 15)
         self.actions = set()
 
-        self.move_amount = 5
-
+        self.world = world
+        self.move_amount = 1
 
     def receive_up(self):
-        print(self, 'up')
+        # print(self, 'up')
         self.actions.add(Actions.shoot)
 
     def receive_left(self):
-        print(self, 'left')
+        # print(self, 'left')
         self.actions.add(Actions.left)
 
     def receive_right(self):
-        print(self, 'right')
+        # print(self, 'right')
         self.actions.add(Actions.right)
+
+    def _clip_x(self, x):
+        # print('clipping {}'.format(x))
+        return min(max(x, 0), 20)
+
 
     def update(self):
 
@@ -40,14 +44,13 @@ class Player():
             # self.shoot()
 
         if Actions.left in self.actions:
-            self.position = Position2(self.position.x - self.move_amount,
-                                      self.position.y)
+            self.position = Position2(
+                self._clip_x(self.position.x - self.move_amount),
+                self.position.y)
 
         if Actions.right in self.actions:
-            self.position = Position2(self.position.x + self.move_amount,
-                                      self.position.y)
-
-        if old_pos is not self.position:
-            print(self.position.x)
+            self.position = Position2(
+                self._clip_x(self.position.x + self.move_amount),
+                self.position.y)
 
         self.actions = set()
