@@ -40,8 +40,8 @@ class Player():
             return
 
         if Actions.shoot in self.actions:
-            pass
-            # self.shoot()
+            bpos = Position2(self.position.x, self.position.y - .2)
+            self.world.add_bullet(bpos, 'player')
 
         if Actions.left in self.actions:
             self.position = Position2(

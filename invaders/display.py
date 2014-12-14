@@ -90,13 +90,18 @@ def world_pos(gl, p):
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)
 
 def draw_alien_field(gl, world):
-    down_frame_motion = 0
-    frame_step_size = 10
 
     for alien_pos in world.alien_field.alien_positions():
         with world_pos(gl, alien_pos):
             # orient_alien_first_time()
             draw_alien(gl)
+
+
+def draw_bullets(gl, glut, bullets):
+    for bullet_pos in bullets.bullet_positions():
+        with world_pos(gl, bullet_pos):
+            gl.glColor3f(1, 1, 1)
+            glut.glutSolidCube(1.5)
 
 
 def draw_scene(gl, glut, world):
@@ -108,7 +113,7 @@ def draw_scene(gl, glut, world):
 
     draw_alien_field(gl, world)
     # draw_barriers()
-
+    draw_bullets(gl, glut, world.bullets)
     draw_player(gl, world.player.position)
 
 

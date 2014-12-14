@@ -34,8 +34,7 @@ class AlienField():
                 if self.field[row_i][a_i]:
                     yield Position2(
                         self.position.x + (1 + self.dist_between) * a_i,
-                        self.position.y + (1 + self.dist_between / 2) * row_i,
-                        )
+                        self.position.y + (1 + self.dist_between / 2) * row_i)
 
 
     @property
