@@ -99,6 +99,7 @@ if __name__ == '__main__':
     glut.glutIdleFunc(draw_func)
     glut.glutReshapeFunc(resize_func)
     glut.glutKeyboardFunc(keyboard.normal_keys)
+    glut.glutSpecialFunc(keyboard.get_special_keys(world))
 
     init_environment(width, height)
 

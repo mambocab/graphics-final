@@ -10,5 +10,6 @@ class Position2(PositionBase):
                                              y=cls._clip(y))
 
     def _clip(x):
-        return min(1, max(x, 0))
+        return x
+        # return min(1, max(x, 0))
 
