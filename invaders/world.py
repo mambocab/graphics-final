@@ -7,7 +7,7 @@ import sys
 
 class World():
     def __init__(self):
-        self.alien_field = AlienField()
+        self.alien_field = AlienField(self)
         self.player = Player(self)
         self.bullets = Bullets()
         self.barriers = Barriers()

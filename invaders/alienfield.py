@@ -15,7 +15,7 @@ def moves_printer(s, _d=collections.Counter()):
 
 
 class AlienField():
-    def __init__(self):
+    def __init__(self, world):
         field_width = 7
         field_height = 5
         self.field = tuple(tuple(True for _ in range(field_width))
