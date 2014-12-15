@@ -2,11 +2,11 @@ from alienfield import AlienField
 from barriers import Barriers
 from playership import Player
 from bullets import Bullets
-
+from audio import you_lose, congratulations
 import sys
 
 class World():
-    def __init__(self):
+    def __init__(self, mode='normal'):
         self.alien_field = AlienField(self)
         self.player = Player(self)
         self.bullets = Bullets()
@@ -17,6 +17,11 @@ class World():
                             self.bullets)
 
         self._collidables = (self.alien_field, self.barriers, self.player)
+
+        if mode == 'easy':
+            self.easy = True
+        else:
+            self.easy = False
 
     def get_collisions(self):
         to_remove = None
@@ -39,6 +44,21 @@ class World():
         while True:
             if not self.get_collisions():
                 break
+
+    def disable_update(self):
+        self._update = self.update
+        self.update = lambda: None
+
+    def player_hit(self):
+        self.disable_update()
+        you_lose()
+
+    def player_wins(self):
+        self.disable_update()
+        congratulations()
+
+    def aliens_hit_barriers(self):
+        self.barriers.field = (0, 0, 0)
 
     def receive_up(self):
         self.player.receive_up()

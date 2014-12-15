@@ -12,6 +12,9 @@ parser.add_argument('--prod', dest='production_mode',
 parser.add_argument('--fullscreen', dest='fullscreen_mode',
                     action='store_const', const=True, default=False,
                     help='enables fullsceen mode')
+parser.add_argument('--easy', dest='mode',
+                    action='store_const', const='easy', default='normal',
+                    help='disables alien fire')
 
 config = parser.parse_args()
 
@@ -55,7 +58,7 @@ def set_projection_matrix(width, height, reset_to_modelview=True):
 def init_environment(width, height):
     '''initialize OpenGL environment'''
     # black background
-    gl.glClearColor(0.0, 0.0, 0.0, 0.0)
+    gl.glClearColor(.9, .9, .9, 0)
     # enable depth buffer clearing
     gl.glClearDepth(1.0)
     # set depth test type and enable depth testing
@@ -90,7 +93,7 @@ if __name__ == '__main__':
     if config.fullscreen_mode:
         glut.glutFullScreen()
 
-    world = World()
+    world = World(config.mode)
 
     # draw scene on display and between other calculations
     draw_func = display.get_display(gl, glut, world)

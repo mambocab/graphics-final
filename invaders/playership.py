@@ -1,5 +1,6 @@
-from worlddatatypes import Velocity, Position2
+from worlddatatypes import Velocity, Position2, Owner
 from enum import Enum, unique
+import audio
 
 @unique
 class Actions(Enum):
@@ -33,7 +34,13 @@ class Player():
 
 
     def collide(self, bullet):
-        pass
+        p = self.position
+        if (p.x - 1.05 < bullet.position.x < p.x + 1.05
+            and p.y < bullet.position.y < p.y + 1):
+            if bullet.owner is Owner.aliens:
+                self.world.player_hit()
+                return True
+
 
     def update(self):
 
@@ -45,6 +52,7 @@ class Player():
         if Actions.shoot in self.actions:
             bpos = Position2(self.position.x, self.position.y - .2)
             self.world.add_bullet(bpos, 'player')
+            audio.player_fire()
 
         if Actions.left in self.actions:
             self.position = Position2(

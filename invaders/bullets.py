@@ -28,8 +28,8 @@ class Bullets():
                 new_bullets.add(Bullet(position=new_pos, owner=b.owner))
         self.bullets = new_bullets
 
-        if self.bullets:
-            print(self.bullets)
+        # if self.bullets:
+        #     print(self.bullets)
 
     def positions(self):
         for b in self.bullets:

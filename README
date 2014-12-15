@@ -1,1 +1,19 @@
-All models adapted from the work of William Hill (wahill2).
+## Features
+
+Run with ./invaders/main.py.
+
+This command accepts 3 command-line arguments:
+
+- `--prod`, which enhances performance by disabling OpenGL logging,
+- `--fullscreen`, which allows you to play in fullscreen mode, and
+- `--easy`, which disables alien fire so you can play with other features.
+
+
+
+## Acknowledgments
+
+All models by William Hill (wahill2).
+
+Audio-playing code adapted from Elliot J. Reed's example code, found at:
+
+http://www.elliotjreed.com/article.php?read=play_a_sound_wav_audio_file_in_python3

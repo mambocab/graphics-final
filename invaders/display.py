@@ -6,8 +6,7 @@ from contextlib import contextmanager
 from collections import deque
 from functools import wraps
 
-from worlddatatypes import Position2
-
+from worlddatatypes import Position2, Owner
 from random import choice
 
 import sys
@@ -68,11 +67,12 @@ def orient_barrier(gl):
 
 
 def draw_alien(gl):
-    with orient_alien(gl):
-        with gl_environment(gl, gl.GL_TRIANGLES):
-            gl.glColor3f(1.0, 0.0, 0.0)
-            for tri in ALIEN_1:
-                consume(map(gl.glVertex3fv, tri))
+    with gl_scale_env(gl, 1, 1, .5):
+        with orient_alien(gl):
+            with gl_environment(gl, gl.GL_TRIANGLES):
+                gl.glColor3f(1.0, 0.0, 0.0)
+                for tri in ALIEN_1:
+                    consume(map(gl.glVertex3fv, tri))
 
 def draw_player(gl, pos):
     with world_pos(gl, pos):
@@ -89,16 +89,27 @@ strength_to_color = {
     1: lambda: choice(((1, 1, 1), (1, 0.658, 0.360), (0.992, 0.247, 0.247)))
 }
 
+@contextmanager
+def gl_scale_env(gl, *args):
+    if len(args) == 1:
+        a = args[0]
+        scale_factor_x, scale_factor_y, scale_factor_z = a, a, a
+    elif len(args) == 3:
+        scale_factor_x, scale_factor_y, scale_factor_z = args[0], args[1], args[2]
+    else:
+        raise ValueError
+    gl.glScale(scale_factor_x, scale_factor_y, scale_factor_z)
+    yield
+    gl.glScale(1/scale_factor_x, 1/scale_factor_y, 1/scale_factor_z)
+
 def draw_barrier(gl, strength):
-    scale_factor = 22
-    gl.glScale(scale_factor, scale_factor, scale_factor)
-    with orient_barrier(gl):
-        with gl_environment(gl, gl.GL_TRIANGLES):
-            color = strength_to_color[strength]()
-            for tri in BARRIER:
-                gl.glColor3fv(color)
-                consume(map(gl.glVertex3fv, tri))
-    gl.glScale(1/scale_factor, 1/scale_factor, 1/scale_factor)
+    with gl_scale_env(gl, 22):
+        with orient_barrier(gl):
+            with gl_environment(gl, gl.GL_TRIANGLES):
+                color = strength_to_color[strength]()
+                for tri in BARRIER:
+                    gl.glColor3fv(color)
+                    consume(map(gl.glVertex3fv, tri))
 
 class once():
     '''decorator to make sure something is called once'''
@@ -130,10 +141,15 @@ def draw_barriers(gl, barriers):
         with world_pos(gl, pos):
             draw_barrier(gl, strength)
 
+bullet_colors = {
+    Owner.aliens: (1, 1, .2),
+    Owner.player: (0, .1, .3)
+}
+
 def draw_bullets(gl, glut, bullets):
-    for bullet_pos in bullets.positions():
-        gl.glColor3f(1, 1, 1)
-        with world_pos(gl, bullet_pos):
+    for b in bullets:
+        gl.glColor3fv(bullet_colors[b.owner])
+        with world_pos(gl, b.position):
             glut.glutSolidCube(1.5)
 
 
