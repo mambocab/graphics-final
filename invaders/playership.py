@@ -32,6 +32,9 @@ class Player():
         return min(max(x, 0), 20)
 
 
+    def collide(self, bullet):
+        pass
+
     def update(self):
 
         old_pos = self.position

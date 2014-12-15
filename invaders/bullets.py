@@ -1,10 +1,6 @@
-from worlddatatypes import Velocity, Position2
+from worlddatatypes import Velocity, Position2, Owner
 from collections import namedtuple
 from enum import Enum
-
-class Owner(Enum):
-    player = 1
-    aliens = 2
 
 Bullet = namedtuple('Bullet', ('position', 'owner'))
 
@@ -18,6 +14,11 @@ class Bullets():
     def add(self, pos, owner):
         self.bullets.add(Bullet(position=pos, owner=Owner[owner]))
 
+
+    def __isub__(self, bullet_set):
+        self.bullets = self.bullets - bullet_set
+        return self
+
     def update(self):
         new_bullets = set()
         for b in self.bullets:
@@ -29,8 +30,14 @@ class Bullets():
 
         # print(self.bullets)
 
-    def bullet_positions(self):
+    def positions(self):
         for b in self.bullets:
             yield b.position
+
+    def remove(self, bullet):
+        self.bullets.remove(bullet)
+
+    def __iter__(self):
+        return self.bullets.__iter__()
 
 

@@ -1,4 +1,5 @@
 from collections import namedtuple
+from enum import Enum
 
 Velocity = namedtuple('Velocity', ('x', 'y'))
 PositionBase = namedtuple('Position2', ('x', 'y'))
@@ -13,3 +14,7 @@ class Position2(PositionBase):
         return x
         # return min(1, max(x, 0))
 
+
+class Owner(Enum):
+    player = 1
+    aliens = 2

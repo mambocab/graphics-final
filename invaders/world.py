@@ -16,9 +16,19 @@ class World():
                             self.player,
                             self.bullets)
 
+        self._collidables = (self.alien_field, self.barriers, self.player)
+
     def update(self):
         for x in self._updatables:
             x.update()
+
+        to_remove = set()
+        for b in self.bullets:
+            for c in self._collidables:
+                if c.collide(b):
+                    to_remove.add(b)
+
+        self.bullets -= to_remove
 
     def receive_up(self):
         self.player.receive_up()

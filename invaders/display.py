@@ -8,6 +8,7 @@ from functools import wraps
 
 from worlddatatypes import Position2
 
+import sys
 
 @contextmanager
 def enabled(gl_setting):
@@ -108,20 +109,20 @@ def world_pos(gl, p):
     yield
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)
 
-def draw_alien_field(gl, world):
-    for alien_pos in world.alien_field.alien_positions():
+def draw_alien_field(gl, alien_field):
+    for alien_pos in alien_field.positions():
         with world_pos(gl, alien_pos):
             # orient_alien_first_time()
             draw_alien(gl)
 
 def draw_barriers(gl, barriers):
-    for pos in barriers:
+    for pos in barriers.positions():
         with world_pos(gl, pos):
             draw_barrier(gl)
 
 def draw_bullets(gl, glut, bullets):
     gl.glColor3f(1, 1, 1)
-    for bullet_pos in bullets.bullet_positions():
+    for bullet_pos in bullets.positions():
         with world_pos(gl, bullet_pos):
             glut.glutSolidCube(1.5)
 
@@ -129,11 +130,11 @@ def draw_bullets(gl, glut, bullets):
 def draw_scene(gl, glut, world):
     pre_draw(gl, glut)
 
-    first = True
+    if not world.bullets:
+        sys.exit()
 
     gl.glTranslatef(0, 0, -50)
-
-    draw_alien_field(gl, world)
+    draw_alien_field(gl, world.alien_field)
     draw_barriers(gl, world.barriers)
     draw_bullets(gl, glut, world.bullets)
     draw_player(gl, world.player.position)

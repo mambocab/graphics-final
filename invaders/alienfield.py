@@ -28,7 +28,7 @@ class AlienField():
 
         self._just_moved_down = False
 
-    def alien_positions(self):
+    def positions(self):
         for row_i, row in enumerate(self.field):
             for a_i, a in enumerate(row):
                 if self.field[row_i][a_i]:
@@ -44,7 +44,7 @@ class AlienField():
     def left(self):
         return self.position.x
 
-    def detect(self):
+    def collide(self, bullet):
         pass
 
 
