@@ -8,6 +8,8 @@ from functools import wraps
 
 from worlddatatypes import Position2
 
+from random import choice
+
 import sys
 
 @contextmanager
@@ -80,13 +82,21 @@ def draw_player(gl, pos):
                 for tri in PLAYER:
                     consume(map(gl.glVertex3fv, tri))
 
-def draw_barrier(gl):
+strength_to_color = {
+    4: lambda: (1, 1, 1),
+    3: lambda: (1, 0.658, 0.360),
+    2: lambda: (0.992, 0.247, 0.247),
+    1: lambda: choice(((1, 1, 1), (1, 0.658, 0.360), (0.992, 0.247, 0.247)))
+}
+
+def draw_barrier(gl, strength):
     scale_factor = 22
     gl.glScale(scale_factor, scale_factor, scale_factor)
     with orient_barrier(gl):
         with gl_environment(gl, gl.GL_TRIANGLES):
+            color = strength_to_color[strength]()
             for tri in BARRIER:
-                gl.glColor3f(1, 1, 1)
+                gl.glColor3fv(color)
                 consume(map(gl.glVertex3fv, tri))
     gl.glScale(1/scale_factor, 1/scale_factor, 1/scale_factor)
 
@@ -116,13 +126,13 @@ def draw_alien_field(gl, alien_field):
             draw_alien(gl)
 
 def draw_barriers(gl, barriers):
-    for pos in barriers.positions():
+    for pos, strength in barriers.positions(with_strength=True):
         with world_pos(gl, pos):
-            draw_barrier(gl)
+            draw_barrier(gl, strength)
 
 def draw_bullets(gl, glut, bullets):
-    gl.glColor3f(1, 1, 1)
     for bullet_pos in bullets.positions():
+        gl.glColor3f(1, 1, 1)
         with world_pos(gl, bullet_pos):
             glut.glutSolidCube(1.5)
 
