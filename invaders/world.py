@@ -18,17 +18,27 @@ class World():
 
         self._collidables = (self.alien_field, self.barriers, self.player)
 
+    def get_collisions(self):
+        to_remove = None
+        for b in self.bullets:
+            if to_remove is not None:
+                break
+            for c in self._collidables:
+                if c.collide(b):
+                    to_remove = b
+
+        if to_remove is not None:
+            self.bullets.remove(to_remove)
+            return True
+        return False
+
     def update(self):
         for x in self._updatables:
             x.update()
 
-        to_remove = set()
-        for b in self.bullets:
-            for c in self._collidables:
-                if c.collide(b):
-                    to_remove.add(b)
-
-        self.bullets -= to_remove
+        while True:
+            if not self.get_collisions():
+                break
 
     def receive_up(self):
         self.player.receive_up()

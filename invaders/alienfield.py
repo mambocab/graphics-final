@@ -1,6 +1,7 @@
-from worlddatatypes import Velocity, Position2
+from worlddatatypes import Velocity, Position2, Owner
 import collections
 import sys
+from utils import tuple_replace
 
 
 def _clip_velocity(x):
@@ -26,12 +27,15 @@ class AlienField():
         self.position = Position2(0, 0)
         self.velocity = Velocity(.05, 0)
 
+        self.alien_height = 1
+        self.alien_width = 1.2
+
         self._just_moved_down = False
 
-    def positions(self):
+    def positions(self, include_empties=False):
         for row_i, row in enumerate(self.field):
             for a_i, a in enumerate(row):
-                if self.field[row_i][a_i]:
+                if self.field[row_i][a_i] or include_empties:
                     yield Position2(
                         self.position.x + (1 + self.dist_between) * a_i,
                         self.position.y + (1 + self.dist_between / 2) * row_i)
@@ -44,9 +48,33 @@ class AlienField():
     def left(self):
         return self.position.x
 
-    def collide(self, bullet):
-        pass
+    def delete_alien_at(self, row, col):
+        new_row = tuple_replace(self.field[row],
+                        col,
+                        False)
+        self.field = tuple_replace(self.field, row, new_row)
 
+    def collide(self, bullet):
+        bullet_x_compensate = .7
+        bullet_y_compensate = 1
+
+        for i, p in enumerate(self.positions(include_empties=True)):
+            # calculate bounding box
+            if (p.x < bullet.position.x + bullet_x_compensate < p.x + self.alien_width
+                and p.y < bullet.position.y + bullet_y_compensate < p.y + self.alien_height):
+                # if the bullet is from the player
+                if bullet.owner is Owner.player:
+                    # get the current alien's position in the array
+                    row, col = i // len(self.field[0]), i % len(self.field[0])
+                    print(i, row, col, sep=':', end='\t')
+                    print(Position2(bullet.position.x + bullet_x_compensate,
+                                    bullet.position.y + bullet_y_compensate),
+                          p)
+                    # if that alien exists
+                    if self.field[row][col]:
+                        # delete that alien
+                        self.delete_alien_at(row, col)
+                        return True
 
     def update(self):
         # detect side collision
