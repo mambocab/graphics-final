@@ -38,13 +38,13 @@ def consume(iterator):
 
 @contextmanager
 def orient_alien(gl):
-    gl.glRotatef(90, 0, 0, 1)
+    gl.glRotatef(-90, 0, 0, 1)
     gl.glRotatef(90, 1, 0, 0)
 
     yield
 
     gl.glRotatef(-90, 1, 0, 0)
-    gl.glRotatef(-90, 0, 0, 1)
+    gl.glRotatef(90, 0, 0, 1)
 
 @contextmanager
 def orient_player(gl):
