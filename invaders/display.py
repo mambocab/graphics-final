@@ -8,6 +8,7 @@ from functools import wraps
 
 from worlddatatypes import Position2, Owner
 from random import choice
+import time
 
 import sys
 
@@ -102,6 +103,7 @@ def gl_scale_env(gl, *args):
     yield
     gl.glScale(1/scale_factor_x, 1/scale_factor_y, 1/scale_factor_z)
 
+
 def draw_barrier(gl, strength):
     with gl_scale_env(gl, 22):
         with orient_barrier(gl):
@@ -110,6 +112,7 @@ def draw_barrier(gl, strength):
                 for tri in BARRIER:
                     gl.glColor3fv(color)
                     consume(map(gl.glVertex3fv, tri))
+
 
 class once():
     '''decorator to make sure something is called once'''
@@ -122,6 +125,7 @@ class once():
             self.f(*self.args, **self.kwargs)
         self.executed = True
 
+
 @contextmanager
 def world_pos(gl, p):
     world_x = lambda x: -100 + 10 * x
@@ -130,11 +134,13 @@ def world_pos(gl, p):
     yield
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)
 
+
 def draw_alien_field(gl, alien_field):
     for alien_pos in alien_field.positions():
         with world_pos(gl, alien_pos):
             # orient_alien_first_time()
             draw_alien(gl)
+
 
 def draw_barriers(gl, barriers):
     for pos, strength in barriers.positions(with_strength=True):
@@ -146,6 +152,7 @@ bullet_colors = {
     Owner.player: (0, .1, .3)
 }
 
+
 def draw_bullets(gl, glut, bullets):
     for b in bullets:
         gl.glColor3fv(bullet_colors[b.owner])
@@ -154,10 +161,8 @@ def draw_bullets(gl, glut, bullets):
 
 
 def draw_scene(gl, glut, world):
-    pre_draw(gl, glut)
 
-    if not world.bullets:
-        sys.exit()
+    pre_draw(gl, glut)
 
     gl.glTranslatef(0, 0, -50)
     draw_alien_field(gl, world.alien_field)
@@ -165,11 +170,12 @@ def draw_scene(gl, glut, world):
     draw_bullets(gl, glut, world.bullets)
     draw_player(gl, world.player.position)
 
-
     # since this is double buffered, swap buffers to display what we drew
     glut.glutSwapBuffers()
 
-    world.update()
+    if time.time() - world.last_updated > 1/60:
+        world.update()
+
 
 def get_display(gl, glut, world):
     def display_func():

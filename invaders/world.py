@@ -3,7 +3,7 @@ from barriers import Barriers
 from playership import Player
 from bullets import Bullets
 from audio import you_lose, congratulations
-import sys
+import time
 
 class World():
     def __init__(self, mode='normal'):
@@ -18,10 +18,8 @@ class World():
 
         self._collidables = (self.alien_field, self.barriers, self.player)
 
-        if mode == 'easy':
-            self.easy = True
-        else:
-            self.easy = False
+        self.mode = mode
+        self.last_updated = time.time()
 
     def get_collisions(self):
         to_remove = None
@@ -44,6 +42,7 @@ class World():
         while True:
             if not self.get_collisions():
                 break
+        self.last_updated = time.time()
 
     def disable_update(self):
         self._update = self.update

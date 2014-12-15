@@ -12,8 +12,8 @@ parser.add_argument('--prod', dest='production_mode',
 parser.add_argument('--fullscreen', dest='fullscreen_mode',
                     action='store_const', const=True, default=False,
                     help='enables fullsceen mode')
-parser.add_argument('--easy', dest='mode',
-                    action='store_const', const='easy', default='normal',
+parser.add_argument('--mode', dest='mode', 
+                    default='normal', nargs=1,
                     help='disables alien fire')
 
 config = parser.parse_args()
@@ -93,7 +93,8 @@ if __name__ == '__main__':
     if config.fullscreen_mode:
         glut.glutFullScreen()
 
-    world = World(config.mode)
+    print(config.mode)
+    world = World(config.mode[0])
 
     # draw scene on display and between other calculations
     draw_func = display.get_display(gl, glut, world)

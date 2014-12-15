@@ -6,9 +6,11 @@ import time
 from random import choice, random
 from audio import alien_down, alien_fire
 
+
 def _clip_velocity(x):
     max_magnitude = .3
     return min(max_magnitude, max(-max_magnitude, x))
+
 
 def moves_printer(s, _d=collections.Counter()):
     _d += {s: 1}
@@ -91,11 +93,11 @@ class AlienField():
                     return True
 
     def maybe_shoot(self):
-        if self.world.easy:
+        if self.world.mode == 'easy':
             return
-        if time.time() - self.last_shot_time < 2:
+        if time.time() - self.last_shot_time < 1 and (not self.world.mode == 'hard'):
             return
-        if random() < .4:
+        if random() < (1 / 10) if self.world.mode == 'hard' else (1 / 40):
             self.world.add_bullet(choice(list(self.positions())), 'aliens')
             self.last_shot_time = time.time()
             # print('shot')
@@ -114,7 +116,7 @@ class AlienField():
 
         # detect side collision
         if (self.right >= 20 or self.left <= 0) and not self._just_moved_down:
-            self.velocity = Velocity(_clip_velocity(-self.velocity.x * 1.2),
+            self.velocity = Velocity(_clip_velocity(-self.velocity.x * 1.1),
                                      self.velocity.y)
             self.position = Position2(self.position.x,
                                       self.position.y + .5)
