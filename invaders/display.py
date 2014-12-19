@@ -13,7 +13,7 @@ import time
 import sys
 
 @contextmanager
-def enabled(gl_setting):
+def enabled(gl, gl_setting):
     gl.glEnable(gl_setting)
     yield
     gl.glDisable(gl_setting)
