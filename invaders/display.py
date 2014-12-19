@@ -107,18 +107,6 @@ def draw_barrier(gl, strength):
                     consume(map(gl.glVertex3fv, tri))
 
 
-class once():
-    '''decorator to make sure something is called once'''
-    def __init__(self, f, *args, **kwargs):
-        self.executed = False
-        self.f, self.args, self.kwargs = f, args, kwargs
-
-    def __call__(self):
-        if not self.executed:
-            self.f(*self.args, **self.kwargs)
-        self.executed = True
-
-
 @contextmanager
 def world_pos(gl, p):
     world_x = lambda x: -100 + 10 * x
