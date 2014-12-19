@@ -96,7 +96,7 @@ if __name__ == '__main__':
     world = World(config.mode[0])
 
     # draw scene on display and between other calculations
-    draw_func = display.get_display(gl, glut, world)
+    draw_func = display.get_display(world)
     glut.glutDisplayFunc(draw_func)
 
     glut.glutIdleFunc(draw_func)
