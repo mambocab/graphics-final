@@ -1,5 +1,5 @@
 from worlddatatypes import Position2, Owner
-from utils import tuple_replace
+from utils import collides, tuple_replace
 
 
 class Barriers():
@@ -21,8 +21,7 @@ class Barriers():
     def collide(self, bullet):
         for i, p in enumerate(self.positions()):
             if self.field[i]:
-                if (p.x - 1.05 < bullet.position.x < p.x + 1.05
-                    and p.y < bullet.position.y < p.y + 1):
+                if (collides(bullet, p, (-1.05, 1.05), (0, 1))):
                     if bullet.owner is Owner.aliens:
                         self.field = tuple_replace(self.field,
                                                    i,
