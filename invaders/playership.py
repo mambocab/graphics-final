@@ -2,6 +2,7 @@ from worlddatatypes import Position2, Owner
 from enum import Enum, unique
 import audio
 from utils import collides
+import time
 
 
 @unique
@@ -18,6 +19,7 @@ class Player():
 
         self.world = world
         self.move_amount = 1
+        self._last_shot_time = 0
 
     def receive_up(self):
         self.actions.add(Actions.shoot)
@@ -31,6 +33,9 @@ class Player():
     def _clip_x(self, x):
         return min(max(x, 0), 20)
 
+    def _can_shoot(self):
+        return time.time() - self._last_shot_time > .75
+
     def collide(self, bullet):
         if collides(bullet, self.position, (-1.05, 1.05), (0, 1)):
             if bullet.owner is Owner.aliens:
@@ -38,14 +43,14 @@ class Player():
                 return True
 
     def update(self):
-
         if len(self.actions) == 0:
             return
 
-        if Actions.shoot in self.actions:
-            bpos = Position2(self.position.x, self.position.y - .2)
-            self.world.add_bullet(bpos, 'player')
+        if Actions.shoot in self.actions and self._can_shoot():
+            bullet_pos = Position2(self.position.x, self.position.y - .2)
+            self.world.add_bullet(bullet_pos, 'player')
             audio.player_fire()
+            self._last_shot_time = time.time()
 
         if Actions.left in self.actions:
             self.position = Position2(
