@@ -39,7 +39,6 @@ class AlienField():
         self.world = world
         self._shot_prob = (1 / 10) if self.world.mode == 'hard' else (1 / 6)
 
-
     def position_at(self, row, col):
         return Position2(self.position.x + (1 + self.dist_between) * col,
                          self.position.y + (1 + self.dist_between / 2) * row)
