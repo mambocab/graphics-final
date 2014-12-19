@@ -93,7 +93,6 @@ if __name__ == '__main__':
     if config.fullscreen_mode:
         glut.glutFullScreen()
 
-    print(config.mode)
     world = World(config.mode[0])
 
     # draw scene on display and between other calculations
