@@ -21,7 +21,7 @@ class Barriers():
     def collide(self, bullet):
         for i, p in enumerate(self.positions()):
             if self.field[i]:
-                if (collides(bullet, p, (-1.05, 1.05), (0, 1))):
+                if collides(bullet, p, (-1.05, 1.05), (0, 1)):
                     if bullet.owner is Owner.aliens:
                         self.field = tuple_replace(self.field,
                                                    i,

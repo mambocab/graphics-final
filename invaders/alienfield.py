@@ -1,6 +1,5 @@
 from worlddatatypes import Velocity, Position2, Owner
 import collections
-import sys
 from utils import tuple_replace
 import time
 from random import choice, random
@@ -37,8 +36,9 @@ class AlienField():
 
         self._just_moved_down = True
         self.last_shot_time = time.time()
-
         self.world = world
+        self._shot_prob = (1 / 10) if self.world.mode == 'hard' else (1 / 6)
+
 
     def position_at(self, row, col):
         return Position2(self.position.x + (1 + self.dist_between) * col,
@@ -53,18 +53,19 @@ class AlienField():
     @property
     def right(self):
         rightmost = max(x for x in range(len(self.field[0]))
-                        if any(self.field[n][x] for n in range(len(self.field))))
+                        if any(self.field[n][x]
+                               for n in range(len(self.field))))
         return self.position_at(0, rightmost).x
+
     @property
     def left(self):
         leftmost = min(x for x in range(len(self.field[0]))
-                       if any(self.field[n][x] for n in range(len(self.field))))
+                       if any(self.field[n][x]
+                              for n in range(len(self.field))))
         return self.position_at(0, leftmost).x
 
     def delete_alien_at(self, row, col):
-        new_row = tuple_replace(self.field[row],
-                        col,
-                        False)
+        new_row = tuple_replace(self.field[row], col, False)
         self.field = tuple_replace(self.field, row, new_row)
         self.remaining -= 1
         alien_down()
@@ -78,8 +79,11 @@ class AlienField():
 
         for i, p in enumerate(self.positions(include_empties=True)):
             # calculate bounding box
-            if (p.x < bullet.position.x + bullet_x_compensate < p.x + self.alien_width
-                and p.y < bullet.position.y + bullet_y_compensate < p.y + self.alien_height):
+            x_comp = bullet.position.x + bullet_x_compensate
+            y_comp = bullet.position.y + bullet_y_compensate
+            x_collides = p.x < x_comp < p.x + self.alien_width
+            y_collides = p.y < y_comp < p.y + self.alien_height
+            if x_collides and y_collides:
                 # get the current alien's position in the array
                 row, col = i // len(self.field[0]), i % len(self.field[0])
                 # print(i, row, col, sep=':', end='\t')
@@ -95,9 +99,11 @@ class AlienField():
     def maybe_shoot(self):
         if self.world.mode == 'easy':
             return
-        if time.time() - self.last_shot_time < 1 and (not self.world.mode == 'hard'):
-            return
-        if random() < (1 / 10) if self.world.mode == 'hard' else (1 / 40):
+        if not self.world.mode == 'hard':
+            if time.time() - self.last_shot_time < 1:
+                return
+
+        if random() < self._shot_prob:
             self.world.add_bullet(choice(list(self.positions())), 'aliens')
             self.last_shot_time = time.time()
             # print('shot')
@@ -110,7 +116,6 @@ class AlienField():
         return False
 
     def update(self):
-
         if self.remaining <= 0:
             self.world.player_wins()
 

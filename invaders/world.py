@@ -5,8 +5,11 @@ from bullets import Bullets
 from audio import you_lose, congratulations
 import time
 
+
 class World():
     def __init__(self, mode='normal'):
+        self.mode = mode
+
         self.alien_field = AlienField(self)
         self.player = Player(self)
         self.bullets = Bullets()
@@ -15,10 +18,8 @@ class World():
         self._updatables = (self.alien_field,
                             self.player,
                             self.bullets)
-
         self._collidables = (self.alien_field, self.barriers, self.player)
 
-        self.mode = mode
         self.last_updated = time.time()
 
     def get_collisions(self):

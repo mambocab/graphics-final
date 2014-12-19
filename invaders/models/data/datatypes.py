@@ -3,7 +3,9 @@ from collections import namedtuple
 from OpenGL.constants import GLfloat_3 as Vec3
 from OpenGL.constants import GLfloat_4 as Vec4
 
+
 ColorBase = namedtuple('Color', ('r', 'g', 'b'))
+
 
 class Color(ColorBase):
     @property
@@ -18,6 +20,7 @@ MaterialBase = namedtuple('Material',
                           ('ambient', 'diffuse', 'specular',
                            'specular_exponent', 'refraction_index',
                            'dissolve', 'illum'))
+
 
 class Material(MaterialBase):
     def __new__(cls, ambient, diffuse, specular, **kw):
@@ -46,4 +49,3 @@ class Model(ModelBase):
 
     def __len__(self):
         return len(self.triangles)
-

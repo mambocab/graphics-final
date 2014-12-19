@@ -12,7 +12,7 @@ parser.add_argument('--prod', dest='production_mode',
 parser.add_argument('--fullscreen', dest='fullscreen_mode',
                     action='store_const', const=True, default=False,
                     help='enables fullsceen mode')
-parser.add_argument('--mode', dest='mode', 
+parser.add_argument('--mode', dest='mode',
                     default='normal', nargs=1,
                     help='disables alien fire')
 

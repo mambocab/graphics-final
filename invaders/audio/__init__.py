@@ -9,7 +9,7 @@ import time
 class AudioFile:
     '''
     adapted to be asynchronous from
-    http://www.elliotjreed.com/article.php?read=play_a_sound_wav_audio_file_in_python3
+    elliotjreed.com/article.php?read=play_a_sound_wav_audio_file_in_python3
     '''
     chunk = 1024
 
@@ -17,10 +17,10 @@ class AudioFile:
         self.wf = wave.open(file, 'rb')
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(
-            format = self.p.get_format_from_width(self.wf.getsampwidth()),
-            channels = self.wf.getnchannels(),
-            rate = self.wf.getframerate(),
-            output = True
+            format=self.p.get_format_from_width(self.wf.getsampwidth()),
+            channels=self.wf.getnchannels(),
+            rate=self.wf.getframerate(),
+            output=True
         )
         self.data = []
         d = self.wf.readframes(self.chunk)
@@ -53,20 +53,27 @@ you_lose_player = AudioFile('invaders/audio/you-lose.wav', wait=3)
 alien_hit_player = AudioFile('invaders/audio/default-alien-hit.wav', wait=.3)
 congrats_player = AudioFile('invaders/audio/congratulations.wav', wait=3)
 
+
 def player_fire():
     player_fire_player.play()
+
 
 def alien_fire():
     alien_fire_player.play()
 
+_alien_down_sounds = (way_to_go_player, direct_hit_player, nice_shot_player)
+
+
 def alien_down():
     if random.random() < .2:
-        random.choice((way_to_go_player, direct_hit_player, nice_shot_player)).play()
+        random.choice(_alien_down_sounds).play()
     else:
         alien_hit_player.play()
 
+
 def you_lose():
     you_lose_player.play()
+
 
 def congratulations():
     congrats_player.play()
