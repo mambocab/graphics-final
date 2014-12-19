@@ -1,5 +1,5 @@
-from worlddatatypes import Position2, Owner
 from utils import collides, tuple_replace
+from worlddatatypes import Owner, Position2
 
 
 class Barriers():

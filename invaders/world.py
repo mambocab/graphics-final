@@ -1,9 +1,10 @@
-from alienfield import AlienField
-from barriers import Barriers
-from playership import Player
-from bullets import Bullets
-from audio import you_lose, congratulations
 import time
+
+from alienfield import AlienField
+from audio import congratulations, you_lose
+from barriers import Barriers
+from bullets import Bullets
+from playership import Player
 
 
 class World():

@@ -1,9 +1,10 @@
-from worlddatatypes import Velocity, Position2, Owner
 import collections
-from utils import tuple_replace
 import time
 from random import choice, random
+
 from audio import alien_down, alien_fire
+from utils import tuple_replace
+from worlddatatypes import Owner, Position2, Velocity
 
 
 def _clip_velocity(x):

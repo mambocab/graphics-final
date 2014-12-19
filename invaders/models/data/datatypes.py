@@ -3,7 +3,6 @@ from collections import namedtuple
 from OpenGL.constants import GLfloat_3 as Vec3
 from OpenGL.constants import GLfloat_4 as Vec4
 
-
 ColorBase = namedtuple('Color', ('r', 'g', 'b'))
 
 

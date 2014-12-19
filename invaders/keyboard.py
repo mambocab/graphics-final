@@ -1,4 +1,5 @@
 import sys
+
 from OpenGL import GLUT as glut
 
 

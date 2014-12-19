@@ -1,5 +1,6 @@
-import models
 import OpenGL
+
+import models
 
 
 def test_basic_model_build():

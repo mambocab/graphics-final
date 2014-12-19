@@ -1,14 +1,13 @@
-from models import ALIEN_1, PLAYER, BARRIER
+import time
 from contextlib import contextmanager
+from random import choice
 
 from OpenGL import GL as gl
 from OpenGL import GLUT as glut
 
+from models import ALIEN_1, BARRIER, PLAYER
 from utils import consume
-
 from worlddatatypes import Owner
-from random import choice
-import time
 
 
 @contextmanager

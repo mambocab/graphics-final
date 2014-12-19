@@ -2,7 +2,15 @@
 
 import argparse
 import sys
+
 import OpenGL
+from OpenGL import GL as gl
+from OpenGL import GLU as glu
+from OpenGL import GLUT as glut
+
+import display
+import keyboard
+from world import World
 
 parser = argparse.ArgumentParser(description='run space invaders')
 prod_message = 'enable production mode (disables logging & error checking)'
@@ -23,15 +31,6 @@ if config.production_mode:
     OpenGL.ERROR_LOGGING = False
 
 ##############
-
-from OpenGL import GL as gl
-from OpenGL import GLU as glu
-from OpenGL import GLUT as glut
-
-import display
-import keyboard
-
-from world import World
 
 # Number of the glut window.
 window = 0

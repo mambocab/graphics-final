@@ -1,8 +1,9 @@
-from worlddatatypes import Position2, Owner
+import time
 from enum import Enum, unique
+
 import audio
 from utils import collides
-import time
+from worlddatatypes import Owner, Position2
 
 
 @unique

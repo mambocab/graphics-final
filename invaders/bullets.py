@@ -1,5 +1,6 @@
-from worlddatatypes import Position2, Owner
 from collections import namedtuple
+
+from worlddatatypes import Owner, Position2
 
 Bullet = namedtuple('Bullet', ('position', 'owner'))
 
