@@ -1,6 +1,9 @@
 from models import ALIEN_1, PLAYER, BARRIER
 from contextlib import contextmanager
 
+from OpenGL import GL as gl
+from OpenGL import GLUT as glut
+
 from utils import consume
 
 from worlddatatypes import Owner
@@ -9,14 +12,14 @@ import time
 
 
 @contextmanager
-def gl_environment(gl, gl_env):
+def gl_environment(gl_env):
     gl.glBegin(gl_env)
     yield
     gl.glEnd()
 
 
 @contextmanager
-def orient_alien(gl):
+def orient_alien():
     gl.glRotatef(-90, 0, 0, 1)
     gl.glRotatef(90, 1, 0, 0)
 
@@ -27,7 +30,7 @@ def orient_alien(gl):
 
 
 @contextmanager
-def orient_player(gl):
+def orient_player():
     gl.glRotatef(-90, 0, 0, 1)
     gl.glRotatef(90, 1, 0, 0)
 
@@ -38,7 +41,7 @@ def orient_player(gl):
 
 
 @contextmanager
-def orient_barrier(gl):
+def orient_barrier():
     gl.glRotatef(-90, 0, 0, 1)
     gl.glRotatef(90, 1, 0, 0)
 
@@ -48,25 +51,25 @@ def orient_barrier(gl):
     gl.glRotatef(90, 0, 0, 1)
 
 
-def pre_draw(gl, glut):
+def pre_draw():
     # clears screen
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     gl.glLoadIdentity()
 
 
-def draw_alien(gl):
-    with gl_scale_env(gl, 1, 1, .5):
-        with orient_alien(gl):
-            with gl_environment(gl, gl.GL_TRIANGLES):
+def draw_alien():
+    with gl_scale_env(1, 1, .5):
+        with orient_alien():
+            with gl_environment(gl.GL_TRIANGLES):
                 gl.glColor3f(1.0, 0.0, 0.0)
                 for tri in ALIEN_1:
                     consume(map(gl.glVertex3fv, tri))
 
 
-def draw_player(gl, pos):
-    with world_pos(gl, pos):
-        with orient_player(gl):
-            with gl_environment(gl, gl.GL_TRIANGLES):
+def draw_player(pos):
+    with world_pos(pos):
+        with orient_player():
+            with gl_environment(gl.GL_TRIANGLES):
                 gl.glColor3f(0, 0, 1)
                 for tri in PLAYER:
                     consume(map(gl.glVertex3fv, tri))
@@ -81,7 +84,7 @@ _strength_to_color = {
 
 
 @contextmanager
-def gl_scale_env(gl, *args):
+def gl_scale_env(*args):
     if len(args) == 1:
         a = args[0]
         scale_factor_x, scale_factor_y, scale_factor_z = a, a, a
@@ -97,10 +100,10 @@ def gl_scale_env(gl, *args):
     gl.glScale(1/scale_factor_x, 1/scale_factor_y, 1/scale_factor_z)
 
 
-def draw_barrier(gl, strength):
-    with gl_scale_env(gl, 22):
-        with orient_barrier(gl):
-            with gl_environment(gl, gl.GL_TRIANGLES):
+def draw_barrier(strength):
+    with gl_scale_env(22):
+        with orient_barrier():
+            with gl_environment(gl.GL_TRIANGLES):
                 color = _strength_to_color[strength]()
                 for tri in BARRIER:
                     gl.glColor3fv(color)
@@ -108,7 +111,7 @@ def draw_barrier(gl, strength):
 
 
 @contextmanager
-def world_pos(gl, p):
+def world_pos(p):
     world_x = lambda x: -100 + 10 * x
     world_y = lambda y: -70 + 10 * y
     gl.glTranslatef(world_x(p.x), -world_y(p.y), 0)
@@ -116,17 +119,16 @@ def world_pos(gl, p):
     gl.glTranslatef(-world_x(p.x), world_y(p.y), 0)
 
 
-def draw_alien_field(gl, alien_field):
+def draw_alien_field(alien_field):
     for alien_pos in alien_field.positions():
-        with world_pos(gl, alien_pos):
-            # orient_alien_first_time()
-            draw_alien(gl)
+        with world_pos(alien_pos):
+            draw_alien()
 
 
-def draw_barriers(gl, barriers):
+def draw_barriers(barriers):
     for pos, strength in barriers.positions(with_strength=True):
-        with world_pos(gl, pos):
-            draw_barrier(gl, strength)
+        with world_pos(pos):
+            draw_barrier(strength)
 
 
 bullet_colors = {
@@ -135,22 +137,22 @@ bullet_colors = {
 }
 
 
-def draw_bullets(gl, glut, bullets):
+def draw_bullets(bullets):
     for b in bullets:
         gl.glColor3fv(bullet_colors[b.owner])
-        with world_pos(gl, b.position):
+        with world_pos(b.position):
             glut.glutSolidCube(1.5)
 
 
-def draw_scene(gl, glut, world):
+def draw_scene(world):
 
-    pre_draw(gl, glut)
+    pre_draw()
 
     gl.glTranslatef(0, 0, -50)
-    draw_alien_field(gl, world.alien_field)
-    draw_barriers(gl, world.barriers)
-    draw_bullets(gl, glut, world.bullets)
-    draw_player(gl, world.player.position)
+    draw_alien_field(world.alien_field)
+    draw_barriers(world.barriers)
+    draw_bullets(world.bullets)
+    draw_player(world.player.position)
 
     # since this is double buffered, swap buffers to display what we drew
     glut.glutSwapBuffers()
@@ -159,7 +161,7 @@ def draw_scene(gl, glut, world):
         world.update()
 
 
-def get_display(gl, glut, world):
+def get_display(world):
     def display_func():
-        return draw_scene(gl, glut, world)
+        return draw_scene(world)
     return display_func
